@@ -1,31 +1,20 @@
-NAME = ft_printf.a
-
-HEAD = ft_printf.h
-
-SRCS = $(wildcard src/*.c)
-
-OBJS = $(addprefix obj/, $(patsubst %.c, %.o, $(notdir $(SRCS))))
-
-FLAG = -Wall -Wextra -Werror
-
-CC = gcc 
-
-AR = ar rcs
-
-RM = rm -rf
+NAME = ftprintf.a
+SRCS = $(addprefix src/, ft_print.c ft_printf.c ft_puts.c)
+OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(OBJS): $(HEAD)
-	@ $(CC) $(FLAG) -c $(addprefix src/, $(patsubst %.o, %.c, $(notdir $@))) -o $(addprefix obj/, $(notdir $@))
+%.o: %.c ft_printf.h
+	@gcc -Wall -Wextra -Werror -c $< -o $@
 
-$(NAME): $(OBJS) $(HEAD)
-	@ $(AR) $(NAME) $(OBJS)
+$(NAME): $(OBJS)
+	@ar rc $(NAME) $(OBJS)
+	@ranlib $(NAME)
 
 clean:
-	@ $(RM) $(OBJS)
+	@rm -rf $(OBJS)
 
 fclean: clean
-	@ $(RM) $(NAME)
+	@rm -rf $(NAME)
 
 re: fclean all

@@ -147,8 +147,8 @@ int main(void)
 	void *a;
 	char b = '8';
 	a = &b;
-	int len_1 = printf ("Moya %s nemnogo %s %x %% %123\n", "Dasha", "Ebanylas", 1012124234);
-	int len_2 = ft_printf ("Moya %s nemnogo %s %x %% %123\n", "Dasha", "Ebanylas", 1012124234);
+	int len_1 = printf (" NULL %s NULL ", 0);
+	int len_2 = ft_printf (" NULL %s NULL ", NULL);
 	printf("orig - %d\nmy - %d\n", len_1, len_2);
 	return (0);
 }
