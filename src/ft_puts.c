@@ -1,49 +1,58 @@
 #include "../ft_printf.h"
 
-void	ft_putchar(char c)
+void	ft_putchar(char c, int *len)
 {
+	*len += 1;
 	write (1, &c, 1);
 }
 
 void	ft_putstr(char *str, int *len)
 {
+	if (str == 0)
+	{
+		ft_putstr("(null)", len);
+		return ;
+	}
 	while (*str)
 	{
-		*len += 1;
-		ft_putchar(*str);
+		ft_putchar(*str, len);
 		str ++;
 	}
 }
 
-void	ft_putnbr_base(unsigned long n, int base, int x, int *len)
+char	*ft_fillstr(unsigned long nbr, int nbrLen, int base, int isLower)
 {
-	if (n / base > 0)
-	{
-		ft_putnbr_base(n / base, base, x, len);
-		ft_putnbr_base(n % base, base, x, len);
-	}
-	else
-	{
-		if (n <= 9)
-		{
-			*len += 1;
-			ft_putchar(n + '0');
-		}
-		else if (x > 0)
-		{
-			*len += 1;
-			ft_putchar('a' + n % 10);
-		}
+	char	*str;
+
+	str = (char *) malloc(sizeof(char) * (nbrLen + 1));
+	if (str == 0)
+		return 0;
+	str[nbrLen --] = '\0';
+	while (nbr / base > 0)
+	{	
+		if (nbr % base <= 9)
+			str[nbrLen --] = nbr % base + '0';
+		else if (isLower)
+			str[nbrLen --] = (nbr % base) % 10 + 'a';
 		else
-		{
-			*len += 1;
-			ft_putchar('A' + n % 10);
-		}
+			str[nbrLen --] = (nbr % base) % 10 + 'A';
+		nbr /= base;
 	}
+	if (nbr % base <= 9)
+		str[nbrLen --] = nbr % base + '0';
+	else if (isLower)
+		str[nbrLen --] = (nbr % base) % 10 + 'a';
+	else
+		str[nbrLen --] = (nbr % base) % 10 + 'A';
+	return str;
 }
 
 void	ft_putnbr(int n, int *len)
 {
+	int		nbrLen;
+	int		nbr;
+	char	*str;
+
 	if (n < 0)
 	{
 		if (n == -2147483648)
@@ -51,50 +60,35 @@ void	ft_putnbr(int n, int *len)
 			ft_putstr("-2147483648", len);
 			return ;
 		}
-		ft_putchar('-');
-		*len += 1;
-		n *= -1;
-	}
-	if (n / 10 > 0)
+ 		ft_putchar('-', len);
+ 		n *= -1;
+ 	}
+	nbr = n;
+	nbrLen = 1;
+	while (nbr / 10 > 0)
 	{
-		ft_putnbr(n / 10, len);
-		ft_putnbr(n % 10, len);
+		nbr /= 10;
+		nbrLen ++;
 	}
-	else
-	{
-		ft_putchar(n + '0');
-		*len += 1;
-	}
+	str = ft_fillstr(n, nbrLen, 10, 0);
+	ft_putstr(str, len);
+	free(str);
 }
 
-// size_t	ft_strlen(const char *c)
-// {
-// 	size_t	len;
+void	ft_putnbr_base(unsigned long n, int base, int isLower, int *len)
+{
+	unsigned long	nbr;
+	int				nbrLen;
+	char			*str;
 
-// 	len = 0;
-// 	while (*c != '\0')
-// 	{
-// 		c ++;
-// 		len ++;
-// 	}
-// 	return (len);
-// }
-
-// int	ft_nbrlen(long nbr, int base)
-// {
-// 	int	len;
-
-// 	if (nbr > 0)
-// 	len = 1;
-// 	else
-// 	{
-// 		len = 2;
-// 		nbr *= -1;
-// 	}
-// 	while (nbr / base > 0)
-// 	{
-// 		len ++;
-// 		nbr = nbr / base;
-// 	}
-// 	return (len);
-// }
+	nbr = n;
+	nbrLen = 1;
+	while (nbr / base > 0)
+	{
+		nbr /= base;
+		nbrLen ++;
+	}
+	str = ft_fillstr(n, nbrLen, base, isLower);
+	ft_putstr(str, len);
+	free(str);
+}
